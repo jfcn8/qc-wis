@@ -82,6 +82,7 @@ class User extends Authenticatable
     {
         return LogOptions::defaults()
         ->logOnly(['name', 'email', 'position', 'permissions', 'access','Office.office', 'isActive'])
+        ->logOnlyDirty()
         ->useLogName('Account');
     }
 }

@@ -54,12 +54,15 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
+        activity()->disableLogging();
         $tempris = TempRis::where('user_id', Auth()->user()->id);
         $tempris->delete();
 
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        activity()->enableLogging();
 
         return redirect('/');
     }

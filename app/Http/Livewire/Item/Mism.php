@@ -44,6 +44,17 @@ class Mism extends Component
         $date_from = date('Y-m-d',strtotime($this->date_from));
         $date_to = date('Y-m-d',strtotime($this->date_to));
 
+        $generatedDate = date('M d-', strtotime($date_from)) . date('d, Y',strtotime($date_to));
+
+
+        $iLog = new ItemLog();
+            activity()
+            ->performedOn($iLog)
+            ->causedBy(auth()->user())
+            ->withProperties(['attributes' => ['Date' => $generatedDate]])
+            ->log('Generate Report - MISM');
+
+
         // $this->from = $this->selectedYear . '-'. $this->selectedMonth .'-01';
         // $this->to = $this->selectedYear . '-'. $this->selectedMonth .'-'. date('t',strtotime($this->from));
 
@@ -54,6 +65,9 @@ class Mism extends Component
         } else {
             session(['date_from' => $date_from]);
             session(['date_to' => $date_to]);
+
+            
+
             $this->reset();
             redirect('/items/mism/generated');
         }

@@ -54,10 +54,21 @@ class SSMI extends Component
 
         $date_from = date('m d - ',strtotime($this->date_from));
         $date_to = date('d Y',strtotime($this->date_to));
+        
 
         $this->generatedDate = $date_from . '' . $date_to;
 
+        $generatedDate = date('M d-', strtotime(session()->get('date_from'))) .date('d, Y',strtotime(session()->get('date_to')));
+
         $this->validate();
+
+        $iLog = new ItemLog();
+        activity()
+        ->performedOn($iLog)
+        ->causedBy(auth()->user())
+        ->withProperties(['attributes' => ['Date' => $generatedDate ]])
+        ->log('Generate Report - SSMI');
+
         session()->flash('message', 'Data is processing please');
 
 
