@@ -101,6 +101,10 @@ class Create extends Component
         ])->layout('livewire.layouts.base');
     }
 
+    public function mount() {
+        $this->purpose  = 'Office Supplies';
+    }
+
     public function addItem() {
         $this->validate();
         $session_id = session()->getId();

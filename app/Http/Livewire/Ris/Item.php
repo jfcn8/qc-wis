@@ -252,6 +252,8 @@ class Item extends Component
                 }
             }
         }
+
+        $this->reset(['quantity', 'item']);
         
         session()->flash('item', 'Item successfully added to RIS.');
     }
