@@ -21,15 +21,6 @@
 
     {{-- @vite(['resources/css/app.css','resources/js/app.js']) --}}
 
-    {{-- import '../js/jquery.js';
-import '../css/app.css';
-import '../css/sb-admin-2.min.css';
-import '../css/custom.css';
-import '../vendor/fontawesome-free/css/all.min.css';
-import '../js/sb-admin-2.min.js';
-import '../vendor/bootstrap/js/bootstrap.bundle.min.js';
-     --}}
-
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/sb-admin-2.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">

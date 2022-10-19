@@ -150,10 +150,10 @@ class Item extends Component
     public function deleteConfirmation($id) {
         $this->item_log_id = $id;
         
-        $itemLog = ItemLog::where('ris_no', $this->ris_no)->count();
-        if ($itemLog <= 1) {
-            $this->deleteMessage = 'There is no more item in this RIS if you delete this. Deleting this Item will also delete the Entire RIS.';
-        }
+        // $itemLog = ItemLog::where('ris_no', $this->ris_no)->count();
+        // if ($itemLog <= 1) {
+        //     $this->deleteMessage = 'There is no more item in this RIS if you delete this. Deleting this Item will also delete the Entire RIS.';
+        // }
         $this->dispatchBrowserEvent('show-delete-item-modal');
     }
     public function deleteItem() {
@@ -169,17 +169,17 @@ class Item extends Component
 
             $itemRis->delete();
 
-            $itemRis_ = ItemLog::where('ris_no', $risNo);
-            if ($itemRis_->count() <= 1) {
-                $risDeleted = 1;
-                ItemLog::where('ris_no', $risNo)->delete();
-                Ris::where('ris_no', $risNo)->delete();
-            }
+            // $itemRis_ = ItemLog::where('ris_no', $risNo);
+            // if ($itemRis_->count() <= 1) {
+            //     $risDeleted = 1;
+            //     ItemLog::where('ris_no', $risNo)->delete();
+            //     Ris::where('ris_no', $risNo)->delete();
+            // }
            
             $ref->stock = $ref->stock + $quantityRequested;
             $ref->save();
 
-            session()->flash(($risDeleted == 1 ? 'message' : 'item'), 'Item has been removed successfully. Quantity returned to its reference. ' . ($risDeleted == 1 ? "RIS Also deleted." : ""));
+            session()->flash(($risDeleted == 1 ? 'message' : 'item'), 'Item has been removed successfully. Quantity returned to its reference. ');
             if ($risDeleted == 1) {
                 return redirect()->to('ris');
             }
