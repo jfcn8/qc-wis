@@ -46,6 +46,8 @@ class Index extends Component
         $this->items = collect();
         $this->stock_number = collect();
         $this->unit_id = collect();
+
+        $this->supplier = 1;
     }
 
     public function updatedArticle($article_id) {
@@ -299,7 +301,7 @@ class Index extends Component
         }
         
         $this->dispatchBrowserEvent('close-modal');
-        $this->reset();
+        $this->resetExcept('supplier');
     }
 
     public function viewDelivery($id) {

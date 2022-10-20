@@ -168,14 +168,7 @@ class Item extends Component
             $risNo = $itemRis->ris_no;
 
             $itemRis->delete();
-
-            // $itemRis_ = ItemLog::where('ris_no', $risNo);
-            // if ($itemRis_->count() <= 1) {
-            //     $risDeleted = 1;
-            //     ItemLog::where('ris_no', $risNo)->delete();
-            //     Ris::where('ris_no', $risNo)->delete();
-            // }
-           
+            
             $ref->stock = $ref->stock + $quantityRequested;
             $ref->save();
 
