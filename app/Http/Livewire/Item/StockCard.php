@@ -6,6 +6,7 @@ use App\Models\Item;
 use App\Models\ItemLog;
 use App\Models\Reference;
 use App\Models\Ris;
+use DateTime;
 
 use Livewire\Component;
 
@@ -33,10 +34,6 @@ class StockCard extends Component
             group by i.item_id
             order by a.article;");
 
-
-
-
-
         session(['date_from' => $this->date_from]);
         session(['date_to' => $this->date_to]);
 
@@ -50,6 +47,10 @@ class StockCard extends Component
 
         
         $generatedDate = date('M d-', strtotime(session()->get('date_from'))) .date('t Y',strtotime(session()->get('date_from')));
+        $date = new DateTime(session()->get('date_from'));
+        $previousDay = $date->modify('-1 day');
+        $previousDay = $previousDay->format('Y-m-d');
+
 
         $itemSelected = Item::where('item_id', $id)->first();
         $itemLogs = ItemLog::whereBetween('item_logs.date_request', [session()->get('date_from'), session()->get('date_to')])
@@ -58,47 +59,72 @@ class StockCard extends Component
                         ->join('references', 'item_logs.reference_id', 'references.reference_id')
                             ->where('references.item_id', $id)
                         ->get();
+                        // dd($itemLogs);
+
+        $previousitemLogs = ItemLog::where('item_logs.date_request', '<=', $previousDay)
+                        ->selectRaw('item_logs.date_request,item_logs.action,item_logs.quantity,references.reference,item_logs.ris_no')
+                        ->orderBy('item_logs.date_request')
+                        ->join('references', 'item_logs.reference_id', 'references.reference_id')
+                            ->where('references.item_id', $id)
+                        ->get();
+        $previousBalance = 0;
+
+        if($previousitemLogs->count() > 0) {
+            foreach ($previousitemLogs as $prev) {
+                if ($prev->action == 3 || $prev->action == 2) {
+                    $previousBalance += $prev->quantity;
+                } else {
+                    $previousBalance -= $prev->quantity;
+                }
+            }
+        }
 
         $grand = array(
-            "BalanceQty"=> 0
+            "BalanceQty"=> ($previousBalance > 0 ) ? $previousBalance : 0
         );
 
 
-        
+        $row = -1;
         foreach($itemLogs as $item) {
+            $row++;
+
+            $ReceiptQty = ($row > 0) ? $stockCard[$row-1]['BalanceQty'] : 0; 
+
+            if ($row == 0) {
+                $ReceiptQty += $previousBalance;
+            }
+
             if ($item->action == 1) {
 
                 $grand['BalanceQty'] -= $item->quantity;
-
                 $ris = Ris::where('ris_no', $item->ris_no)->first();
 
                 $newdata =  array (
-                    'Date' => date('M. d, Y', strtotime($item->date_request)),
+                    'Date' =>  date('M. d, Y', strtotime($item->date_request)),
                     'Reference' => $item->reference,
-                    'ReceiptQty' => ($item->action == 3 || $item->action == 2) ? $item->quantity : 0,
+                    'ReceiptQty' => $ReceiptQty ,
                     'IssuanceQty' => $item->quantity,
                     'Office' => $ris->Office->office,
                     'BalanceQty' => $grand['BalanceQty'],
                 );
+
             } else {
                 $grand['BalanceQty'] += $item->quantity;
 
                 $newdata =  array (
                     'Date' => date('M. d, Y', strtotime($item->date_request)),
                     'Reference' => $item->reference,
-                    'ReceiptQty' => ($item->action == 3) ? $item->quantity : 0,
+                    'ReceiptQty' => $ReceiptQty,
                     'IssuanceQty' => ($item->action == 2) ? $item->quantity : 0,
-                    'Office' => ($item->action == 2) ? '*Delivery*' : '',
+                    'Office' => ($item->action == 2) ? '*DELIVERY*' : '',
                     'BalanceQty' => $grand['BalanceQty'],
                 );
             }
-
             array_push($stockCard, $newdata);
         }
 
         $stockCardDate = date('M. d - ', strtotime(session()->get('date_from'))) . date(' M. d, Y', strtotime(session()->get('date_to')));
-                        
-        
+                    
         return view('livewire.item.stock-card.index', [
             'fileName' => $this->RemoveSpecialChar("StockCard_" .$itemSelected->Article->article .'_'.$itemSelected->description.'_'.session()->get('date_from') . '-' . session()->get('date_to')) .'.xls',
             'items' => $itemSelected,

@@ -47,10 +47,10 @@ class Index extends Component
         $to = $sun->format('Y-m-d');
 
         $deliveryCount = Delivery::whereBetween('delivery_date', [$from, $to])->count();
+
         $pendingCount = DB::table('ris')
                         ->where('gso', 0)
                         ->orWhere('budget', 0)
-                        ->groupBy('ris_no')
                         ->count();
 
         $risCount = Ris::whereBetween('date_request', [$from, $to])->count();
