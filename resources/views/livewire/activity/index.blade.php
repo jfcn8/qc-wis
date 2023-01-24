@@ -40,7 +40,7 @@
                                         <br>
                                     @endforeach
                                 </td>
-                                <td>{{ $activity->User->name }}</td>
+                                <td>{{ $activity->User?->name }}</td>
                                 <td>{{ ($activity->created_at == null) ? "" : $activity->created_at->format('M. d, Y h:m:s A') }}</td>
 
                                 
