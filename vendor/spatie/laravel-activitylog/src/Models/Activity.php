@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Spatie\Activitylog\Contracts\Activity as ActivityContract;
-use App\Models\User;
+
 /**
  * Spatie\Activitylog\Models\Activity.
  *
@@ -19,6 +19,8 @@ use App\Models\User;
  * @property int|null $subject_id
  * @property string|null $causer_type
  * @property int|null $causer_id
+ * @property string|null $event
+ * @property string|null $batch_uuid
  * @property \Illuminate\Support\Collection|null $properties
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
@@ -57,12 +59,6 @@ class Activity extends Model implements ActivityContract
         parent::__construct($attributes);
     }
 
-     public function User()
-    {
-        return $this->belongsTo(User::class, 'causer_id', 'id');
-    }
-
-
     public function subject(): MorphTo
     {
         if (config('activitylog.subject_returns_soft_deleted_models')) {
@@ -77,9 +73,9 @@ class Activity extends Model implements ActivityContract
         return $this->morphTo();
     }
 
-    public function getExtraProperty(string $propertyName): mixed
+    public function getExtraProperty(string $propertyName, mixed $defaultValue = null): mixed
     {
-        return Arr::get($this->properties->toArray(), $propertyName);
+        return Arr::get($this->properties->toArray(), $propertyName, $defaultValue);
     }
 
     public function changes(): Collection

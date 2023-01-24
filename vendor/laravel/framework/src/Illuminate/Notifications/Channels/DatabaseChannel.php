@@ -31,7 +31,7 @@ class DatabaseChannel
     protected function buildPayload($notifiable, Notification $notification)
     {
         return [
-            'model_id' => $notification->model_id,
+            'id' => $notification->id,
             'type' => method_exists($notification, 'databaseType')
                         ? $notification->databaseType($notifiable)
                         : get_class($notification),
