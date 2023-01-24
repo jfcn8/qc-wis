@@ -175,11 +175,11 @@
             </tbody>
     </table>
   @php
-    // $filename = $fileName;
-    // header("Content-Type: application/xls");    
-    // header("Content-Disposition: attachment; filename=" . $filename);  
-    // header("Pragma: no-cache"); 
-    // header("Expires: 0");
+    $filename = $fileName;
+    header("Content-Type: application/xls");    
+    header("Content-Disposition: attachment; filename=" . $filename);  
+    header("Pragma: no-cache"); 
+    header("Expires: 0");
   @endphp
 </body>
 </html>
